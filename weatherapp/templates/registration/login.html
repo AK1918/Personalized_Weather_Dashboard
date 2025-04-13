@@ -1,0 +1,285 @@
+{% extends 'weatherapp/base.html' %}
+{% block title %}Login/Register{% endblock %}
+
+{% block extra_css %}
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 400px;
+        height: 500px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.8s;
+    }
+
+    .card.flip {
+        transform: rotateY(180deg);
+    }
+
+    .side {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-side {
+        transform: rotateY(0deg);
+    }
+
+    .register-side {
+        transform: rotateY(180deg);
+    }
+
+    .form-title {
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 1.8em;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        color: white;
+        margin-bottom: 8px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        outline: none;
+    }
+
+    .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .password-field {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        cursor: pointer;
+        user-select: none;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .switch-form {
+        text-align: center;
+        margin-top: 20px;
+        color: white;
+    }
+
+    .switch-form a {
+        color: white;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .error-message {
+        color: #ff6b6b;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-primary {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn:hover {
+        background: rgba(139, 92, 246, 1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% comment %} <div class="container"> {% endcomment %}
+    <div class="card" id="card">
+        <!-- Login Side -->
+        <div class="side login-side">
+            <h2 class="form-title">Login</h2>
+            <form method="post" action="{% url 'login' %}" id="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-field">
+                        <input type="password" name="password" id="password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                {% if form.errors %}
+                <div class="error-message">
+                    Invalid username or password.
+                </div>
+                {% endif %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'home' %}'">Home</button>
+                </div>
+            </form>
+            <div class="switch-form">
+                <span>Don't have an account? </span>
+                <a onclick="flipCard()">Register</a>
+            </div>
+        </div>
+
+        <!-- Register Side -->
+        <div class="side register-side">
+            <h2 class="form-title">Register</h2>
+            <form method="post" action="{% url 'register' %}" id="register-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" name="username" id="reg-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <div class="password-field">
+                        <input type="password" name="password" id="reg-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reg-confirm-password">Confirm Password</label>
+                    <div class="password-field">
+                        <input type="password" name="confirm_password" id="reg-confirm-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                {% if form.errors %}
+                <div class="error-message">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'home' %}'">Home</button>
+                </div>
+            </form>
+            <div class="switch-form">
+                <span>Already have an account? </span>
+                <a onclick="flipCard()">Login</a>
+            </div>
+        </div>
+    </div>
+{% comment %} </div> {% endcomment %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function flipCard() {
+    document.getElementById('card').classList.toggle('flip');
+}
+
+function togglePassword(button) {
+    const input = button.parentElement.querySelector('input');
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = '🔒';
+    } else {
+        input.type = 'password';
+        button.textContent = '👁️';
+    }
+}
+
+// Check if we should show register form based on URL
+if (window.location.hash === '#register') {
+    flipCard();
+}
+
+// Add password validation for registration
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+        const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirm-password').value;
+        
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+        }
+    });
+}
+</script>
+{% endblock %}
