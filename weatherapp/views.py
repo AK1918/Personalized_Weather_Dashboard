@@ -106,7 +106,7 @@ def save_city(request):
             try:
                 City.objects.create(name=city_name, user=request.user)
                 messages.success(request, f'{city_name} has been added successfully!')
-            except:
+            except Exception:
                 messages.error(request, f'{city_name} is already in your list!')
         else:
             messages.error(request, 'City not found!')
@@ -148,3 +148,4 @@ def update_city(request, city_id):
     
 
     return redirect('dashboard')
+
