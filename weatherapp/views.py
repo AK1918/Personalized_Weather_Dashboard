@@ -134,6 +134,7 @@ def update_city(request, city_id):
             
             # Verify new city name exists in OpenWeather
             url = f'http://api.openweathermap.org/data/2.5/weather?q={new_name}&units=metric&appid={settings.OPENWEATHER_API_KEY}'
+            
             response = requests.get(url)
             
             if response.status_code == 200:
@@ -145,4 +146,5 @@ def update_city(request, city_id):
         except City.DoesNotExist:
             messages.error(request, 'City not found!')
     
+
     return redirect('dashboard')
